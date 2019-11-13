@@ -1,40 +1,58 @@
-import React, { Component } from 'react'
-import Coin from './Coin';
-import './CoinFlipper.css';
+import React, { Component } from "react";
+import Coin from "./Coin";
+import "./CoinFlipper.css";
 
 class CoinFlipper extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    // State üzerinde paranın başlangıçtaki durumunu veriyoruz, başlangıçta "tura" olsun.
-    // Daha sonra şu anda paranın dönüp dönmeme durumunu da veriyoruz, başlangıçta para atılmamış olduğundan "false" olarak verdik.
     this.state = {
-        side: "tura",
-        donuyor: false
-    }
+      side: "",
+      donuyor: false,
+      flip: []
+    };
   }
+
   handleClick = () => {
-    // "At!" butonuna tıkladığımızda paranın dönmesini istiyoruz, bu yüzden "donuyor" durumunu "true" yapıyoruz.
-    this.setState({donuyor: true});
-    // 1 saniye kadar dönmesi yeterli, bu yüzden 1 saniye sonra "donuyor" durmunu tekrar "false" yapıyoruz.
-    setTimeout(() => this.setState({donuyor: false}), 1000);
+    let turn = Math.floor(Math.random() * 2);
+    const finalSide = turn === 0 ? "tura" : "yazi";
+    this.setState({ donuyor: true }, () => {
+      setTimeout(() => {
+        this.setState({
+          donuyor: false,
+          side: finalSide,
+          flip: [...this.state.flip, finalSide]
+        });
+        console.log(this.state.flip);
+      }, 1000);
+    });
   };
 
-  render(){
+  tura = () => {
+    let tura = this.state.flip.filter(value => value === "tura");
+    return tura.length;
+  };
+
+  yazi = () => {
+    let yazi = this.state.flip.filter(value => value === "yazi");
+    return yazi.length;
+  };
+
+  render() {
     return (
       <div className="CoinFlipper">
         <h1>Yazı mı Tura mı?</h1>
         <Coin side={this.state.side} donuyor={this.state.donuyor} />
-        <button onClick={this.handleClick} >At!</button>
+        <button onClick={this.handleClick}>At!</button>
         <p>
-            Toplam
-            <strong> 5 </strong>
-            atıştan
-            <strong> 3 </strong>
-            ü tura
-            <strong> 2 </strong>
-            si yazı geldi.</p>
+          Toplam
+          <strong> {this.state.flip.length} </strong>
+          atıştan
+          <strong> {this.tura()} </strong>ü tura
+          <strong> {this.yazi()} </strong>
+          si yazı geldi.
+        </p>
       </div>
-    )
+    );
   }
 }
 
